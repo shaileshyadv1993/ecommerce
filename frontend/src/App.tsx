@@ -3,6 +3,7 @@ import { Route, Routes } from "react-router-dom";
 import Login from "./Pages/auth/Login";
 import SignUp from "./Pages/auth/SignUp";
 import PageNotFound from "./Pages/errors/NotFound";
+import { ToastContainer, toast } from "react-toastify";
 
 function App() {
   return (
@@ -13,6 +14,7 @@ function App() {
         {/* Wild card routing */}
         <Route path="*" element={<PageNotFound />} />
       </Routes>
+      <ToastContainer />
     </>
   );
 }
