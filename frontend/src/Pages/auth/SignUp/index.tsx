@@ -10,6 +10,8 @@ import {
 } from "../../../Services/toaster.service";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { config } from "../../../config";
+import { postData } from "../../../Services/axios.service";
 
 const SignUp = () => {
   const [name, setName] = useState("");
@@ -25,27 +27,29 @@ const SignUp = () => {
       warningToast("Password and confirm password must be same.");
     } else {
       const data = { name, email, password };
-      try {
-        const response = await axios.post(
-          "http://localhost:8080/api/v1/auth/register",
-          data
-        );
 
-        if (response.data.status) {
-          navigate("/");
-          successToast(response.data.message);
-        }
-      } catch (error: any) {
-        errorToast(error.response.data.error);
+      const response = await postData("/auth/register", data);
+      // try {
+      //   const response = await axios.post(
+      //     `${config.SERVER_URL}/auth/register`,
+      //     data
+      //   );
+      console.log(response);
+      if (response.status) {
+        navigate("/");
+        successToast(response.message);
       }
+      // } catch (error: any) {
+      //   errorToast(error.response.data.error);
+      // }
     }
   };
 
   return (
     <>
-      <Container>
+      <Container className="shadow-lg p-3 bg-body rounded  w-75">
         <Row className="d-flex justify-content-center">
-          <Col xs={12} md={6}>
+          <Col xs={10} md={5}>
             <h1 className="mb-5">Sign-Up</h1>
             <Form onSubmit={registerSubmitHandler}>
               <TextField
