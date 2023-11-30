@@ -2,43 +2,32 @@ import Container from "@mui/material/Container";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import { Col, Form, Row } from "react-bootstrap";
-import { useState } from "react";
-import {
-  errorToast,
-  successToast,
-  warningToast,
-} from "../../../Services/toaster.service";
-import axios from "axios";
+// import { useState } from "react";
+// import {
+//   errorToast,
+//   successToast,
+//   warningToast,
+// } from "../../../Services/toaster.service";
+// import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { config } from "../../../config";
-import { Formik, ErrorMessage } from "formik";
+// import { config } from "../../../config";
+import { Formik } from "formik";
 import { object, string } from "yup";
 import { AuthInterface } from "../../../interface/auth.interface";
 import { postData } from "../../../Services/axios.service";
+import { successToast } from "../../../Services/toaster.service";
+import { useDispatch } from "react-redux";
+import { login } from "../../../slice/authSlice";
 
 const Login = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [isLoading, setIsloading] = useState(false);
-  const navigate = useNavigate();
-
-  const registerSignInHandler = async (e: any) => {
-    e.preventDefault();
-    const data = { email, password };
-    try {
-      const response = await axios.post(
-        `${config.SERVER_URL}/auth/login`,
-        data
-      );
-      if (response.status === 200) {
-        // navigate("/");
-        successToast(response.data.status);
-      }
-    } catch (error: any) {
-      console.log(error);
-      errorToast(error.response.data.error);
-    }
+  let initialValues = {
+    email: "",
+    password: "",
   };
+
+  const dispatch = useDispatch();
+
+  const navigate = useNavigate();
 
   let authvalidationSchema = object({
     email: string().email().required("Email is required field."),
@@ -48,8 +37,18 @@ const Login = () => {
   });
 
   const loginHandler = async (values: AuthInterface) => {
-    console.log(values);
     const resp = await postData("/auth/login", values);
+    if (resp.status === "success") {
+      const data = {
+        jwt: resp.token,
+        role: resp.authData.role,
+        email: resp.authData.email,
+      };
+      dispatch(login(data));
+      // console.log(data);
+      successToast("User Logged in Successfully");
+      navigate("/products");
+    }
   };
 
   return (
